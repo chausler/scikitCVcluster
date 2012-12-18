@@ -14,19 +14,20 @@ except:
 
 
 def classify(cv):
-        train = cv[0]
-        test = cv[1]
-        regr = clf(**clf_args)
-        regr.fit(X[train], y[train])
-        coef = None
-        if return_coefs:
-            try:
-                coef = regr.coef_
-            except:
-                pass
+    train = cv[0]
+    test = cv[1]
+    gg = X[train]
+    regr = clf(**clf_args)
+    regr.fit(X[train], y[train])
+    coef = None
+    if return_coefs:
+        try:
+            coef = regr.coef_
+        except:
+            pass
 
-        pred = regr.predict(X[test])
-        return (pred, coef)
+    pred = regr.predict(X[test])
+    return (pred, coef)
         #return (train, test)
 
 
@@ -43,12 +44,14 @@ class scikitCVcluster():
 
     def CV(self, clf, X, y, folds=5, clf_args={}, clf_fit_args={},
            clf_pred_args={}, return_coefs=False):
-
+        print clf, X, y, folds
         cv = KFold(len(X), k=folds, indices=True)#, shuffle=True)
         self.dview.push({'X': X, 'y': y, 'clf': clf, 'clf_args': clf_args,
                          'fit_args': clf_fit_args, 'pred_args': clf_pred_args,
                          'return_coefs' : return_coefs})
         pred = []
+        print self.dview['clf']
+        print self.dview['X']
         try:
             pred = self.dview.map(classify, cv)
         except RemoteError as e:
