@@ -1,7 +1,12 @@
+import sys
+sys.path.append('..')
+sys.path = ['/home/chris/programs/aa_scikits/scikit-learn'] + sys.path
+
 from sklearn.cross_validation import KFold
 import numpy as np
 try:
     from IPython.parallel import Client
+    from IPython.parallel.error import RemoteError
 except:
     Client = None
     print 'Failed to find IPython.parallel - No parallel processing available'
@@ -20,7 +25,6 @@ def classify(cv):
                 pass
 
         pred = regr.predict(X[test])
-        
         return (pred, coef)
         #return (train, test)
 
@@ -43,8 +47,17 @@ class scikitCVcluster():
         self.dview.push({'X': X, 'y': y, 'clf': clf, 'clf_args': clf_args,
                          'fit_args': clf_fit_args, 'pred_args': clf_pred_args,
                          'return_coefs' : return_coefs})
+        pred = []
+        try:
+            pred = self.dview.map(classify, cv)
+        except RemoteError as e:
+            e.print_traceback()
+            print e
+            if e.engine_info:
+                print "e-info: " + str(e.engine_info)
+            if e.ename:
+                print "e-name:" + str(e.ename)
 
-        pred = self.dview.map(classify, cv)
         preds = []
         coefs = []
         for (p, c) in pred:
@@ -53,11 +66,11 @@ class scikitCVcluster():
 
         return np.array(preds), np.array(coefs)
 
-
-
-
-if __name__ == "__main__":
-    h = scikitCVcluster(None)
-    X = np.ones([4, 10])
-    y = np.ones([10])
-    h.CV(None, X, y)
+if __name__ == "__main__":     
+    from sklearn import neighbors
+    from sklearn import datasets
+    iris = datasets.load_iris()
+    cv = scikitCVcluster()
+    clf = neighbors.KNeighborsClassifier
+    preds, _ = cv.CV(clf, iris.data, iris.target)
+    print 'Accuracy: %.2f' % (np.sum(preds == iris.target) / (len(iris.target) * 1.))
