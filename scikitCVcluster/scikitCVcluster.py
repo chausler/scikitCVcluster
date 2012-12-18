@@ -44,7 +44,7 @@ class scikitCVcluster():
                          'fit_args': clf_fit_args, 'pred_args': clf_pred_args,
                          'return_coefs' : return_coefs})
 
-        pred = self.lview.map(classify, cv)
+        pred = self.dview.map(classify, cv)
         preds = []
         coefs = []
         for (p, c) in pred:
