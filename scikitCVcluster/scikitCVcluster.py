@@ -4,6 +4,7 @@ sys.path = ['/home/chris/programs/aa_scikits/scikit-learn'] + sys.path
 
 from sklearn.cross_validation import KFold
 import numpy as np
+from sklearn.neighbors import RadiusNeighborsClassifier
 try:
     from IPython.parallel import Client
     from IPython.parallel.error import RemoteError
