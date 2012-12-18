@@ -41,7 +41,7 @@ def CV(clf, X, y, folds=5, clf_args={}, clf_fit_args={},
     cv = KFold(len(X), k=folds, indices=True)#, shuffle=True)
     dview.push({'X': X, 'y': y, 'clf': clf, 'clf_args': clf_args,
                      'fit_args': clf_fit_args, 'pred_args': clf_pred_args,
-                     'return_coefs' : return_coefs})
+                     'return_coefs': return_coefs})
     pred = []
     try:
         pred = dview.map(classify, cv)
