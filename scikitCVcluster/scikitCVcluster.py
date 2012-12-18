@@ -70,6 +70,7 @@ class scikitCVcluster():
 
         return np.array(preds), np.array(coefs)
 
+
 if __name__ == "__main__":     
     from sklearn import neighbors
     from sklearn import datasets
