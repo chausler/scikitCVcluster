@@ -1,11 +1,11 @@
-from scikitCVcluster import scikitCVcluster
+from scikitCVcluster import CV
 from sklearn import neighbors
 from sklearn import datasets
 import numpy as np
 
 iris = datasets.load_iris()
-cv = scikitCVcluster()
+
 cc = neighbors.KNeighborsClassifier
-preds, _ = cv.CV(cc, iris.data, iris.target)
+preds, _ = CV(cc, iris.data, iris.target)
 print preds
 print 'Accuracy: %.2f' % (np.sum(preds == iris.target) / (len(iris.target) * 1.))
