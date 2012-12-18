@@ -1,6 +1,6 @@
 import sys
 sys.path.append('..')
-sys.path = ['/home/chris/programs/aa_scikits/scikit-learn'] + sys.path
+#sys.path = ['/home/chris/programs/aa_scikits/scikit-learn'] + sys.path
 from sklearn.cross_validation import KFold
 import numpy as np
 try:
@@ -42,7 +42,7 @@ class scikitCVcluster():
     def CV(self, clf, X, y, folds=5, clf_args={}, clf_fit_args={},
            clf_pred_args={}, return_coefs=False):
 
-        cv = KFold(len(X), n_folds=folds, indices=True)#, shuffle=True)
+        cv = KFold(len(X), k=folds, indices=True)#, shuffle=True)
         self.dview.push({'X': X, 'y': y, 'clf': clf, 'clf_args': clf_args,
                          'fit_args': clf_fit_args, 'pred_args': clf_pred_args,
                          'return_coefs' : return_coefs})
