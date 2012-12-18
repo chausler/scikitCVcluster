@@ -52,7 +52,7 @@ class scikitCVcluster():
         try:
             pred = dview.map(classify, cv, block=True)
         except RemoteError as e:
-            e.print_traceback()
+            e.print_tracebacks()
             print e
             if e.engine_info:
                 print "e-info: " + str(e.engine_info)
