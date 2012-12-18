@@ -11,8 +11,7 @@ try:
 except:
     Client = None
     print 'Failed to find IPython.parallel - No parallel processing available'
-rc = Client()
-dview = rc[:]
+
 
 def classify(cv):
     train = cv[0]
@@ -35,24 +34,27 @@ class scikitCVcluster():
 
     def __init__(self):
         print 'hooraz' if Client else 'blag'
-#        rc = Client()
-#        self.dview = rc[:]        
+        rc = Client()
+        self.dview = rc[:]
+        self.lview = rc.load_balanced_view()
+        self.lview.block = True
         if Client:
             print '%d engines found' % len(rc.ids)
 
     def CV(self, clf, X, y, folds=5, clf_args={}, clf_fit_args={},
            clf_pred_args={}, return_coefs=False):
-        print y
+        print clf, X, y, folds
         cv = KFold(len(X), k=folds, indices=True)#, shuffle=True)
-        dview.push({'X': X, 'y': y, 'clf': clf, 'clf_args': clf_args,
+        self.dview.push({'X': X, 'y': y, 'clf': clf, 'clf_args': clf_args,
                          'fit_args': clf_fit_args, 'pred_args': clf_pred_args,
-                         'return_coefs': return_coefs})
+                         'return_coefs' : return_coefs})
         pred = []
-        print dview['y']
+        print self.dview['clf']
+        print self.dview['X']
         try:
-            pred = dview.map(classify, cv, block=True)
+            pred = self.dview.map(classify, cv)
         except RemoteError as e:
-            e.print_tracebacks()
+            e.print_traceback()
             print e
             if e.engine_info:
                 print "e-info: " + str(e.engine_info)
