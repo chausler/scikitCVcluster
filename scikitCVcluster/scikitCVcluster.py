@@ -11,7 +11,8 @@ try:
 except:
     Client = None
     print 'Failed to find IPython.parallel - No parallel processing available'
-
+rc = Client()
+dview = rc[:]
 
 def classify(cv):
     train = cv[0]
@@ -34,25 +35,22 @@ class scikitCVcluster():
 
     def __init__(self):
         print 'hooraz' if Client else 'blag'
-        rc = Client()
-        self.dview = rc[:]
-        self.lview = rc.load_balanced_view()
-        self.lview.block = True
+#        rc = Client()
+#        self.dview = rc[:]        
         if Client:
             print '%d engines found' % len(rc.ids)
 
     def CV(self, clf, X, y, folds=5, clf_args={}, clf_fit_args={},
            clf_pred_args={}, return_coefs=False):
-        print clf, X, y, folds
+        print y
         cv = KFold(len(X), k=folds, indices=True)#, shuffle=True)
-        self.dview.push({'X': X, 'y': y, 'clf': clf, 'clf_args': clf_args,
+        dview.push({'X': X, 'y': y, 'clf': clf, 'clf_args': clf_args,
                          'fit_args': clf_fit_args, 'pred_args': clf_pred_args,
-                         'return_coefs' : return_coefs})
+                         'return_coefs': return_coefs})
         pred = []
-        print self.dview['clf']
-        print self.dview['X']
+        print dview['y']
         try:
-            pred = self.dview.map(classify, cv)
+            pred = dview.map(classify, cv, block=True)
         except RemoteError as e:
             e.print_traceback()
             print e
@@ -75,6 +73,6 @@ if __name__ == "__main__":
     from sklearn import datasets
     iris = datasets.load_iris()
     cv = scikitCVcluster()
-    clf = neighbors.KNeighborsClassifier
-    preds, _ = cv.CV(clf, iris.data, iris.target)
+    cc = neighbors.KNeighborsClassifier
+    preds, _ = cv.CV(cc, iris.data, iris.target)
     print 'Accuracy: %.2f' % (np.sum(preds == iris.target) / (len(iris.target) * 1.))
