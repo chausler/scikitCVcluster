@@ -1,10 +1,8 @@
 import sys
 sys.path.append('..')
 sys.path = ['/home/chris/programs/aa_scikits/scikit-learn'] + sys.path
-
 from sklearn.cross_validation import KFold
 import numpy as np
-from sklearn.neighbors import RadiusNeighborsClassifier
 try:
     from IPython.parallel import Client
     from IPython.parallel.error import RemoteError
@@ -44,7 +42,7 @@ class scikitCVcluster():
     def CV(self, clf, X, y, folds=5, clf_args={}, clf_fit_args={},
            clf_pred_args={}, return_coefs=False):
 
-        cv = KFold(len(X), k=folds, indices=True)#, shuffle=True)
+        cv = KFold(len(X), n_folds=folds, indices=True)#, shuffle=True)
         self.dview.push({'X': X, 'y': y, 'clf': clf, 'clf_args': clf_args,
                          'fit_args': clf_fit_args, 'pred_args': clf_pred_args,
                          'return_coefs' : return_coefs})
@@ -66,14 +64,3 @@ class scikitCVcluster():
             coefs += [c]
 
         return np.array(preds), np.array(coefs)
-
-
-if __name__ == "__main__":     
-    from sklearn import neighbors
-    from sklearn import datasets
-    iris = datasets.load_iris()
-    cv = scikitCVcluster()
-    cc = neighbors.KNeighborsClassifier
-    preds, _ = cv.CV(cc, iris.data, iris.target)
-    print preds
-    print 'Accuracy: %.2f' % (np.sum(preds == iris.target) / (len(iris.target) * 1.))
