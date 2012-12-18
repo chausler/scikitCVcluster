@@ -16,6 +16,7 @@ except:
 def classify(cv):
         train = cv[0]
         test = cv[1]
+        gg = X[train]
         regr = clf(**clf_args)
         regr.fit(X[train], y[train])
         coef = None
