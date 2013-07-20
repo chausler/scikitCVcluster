@@ -39,18 +39,24 @@ def classify(cv):
             coef = regr.coef_
         except:
             pass
-    pred = regr.predict(X[test], **clf_pred_args)
+    if pred_method == 'predict':
+        pred = regr.predict(X[test], **clf_pred_args)
+    elif pred_method == 'predict_proba':
+        pred = regr.predict_proba(X[test], **clf_pred_args)
+    elif pred_method == 'predict_log_proba':
+        pred = regr.predict_log_proba(X[test], **clf_pred_args)
     return (pred, coef)
 
 
-def CV(clf, X, y, folds=5, shuffle=True, clf_args={}, clf_fit_args={},
-       clf_pred_args={}, return_coefs=False):
+def CV(clf, X, y, folds=5, shuffle=True, pred_method='predict', clf_args={},
+       clf_fit_args={}, clf_pred_args={}, return_coefs=False):
     """
     @param clf: the classifier to use, must have methods fit and predict
     @param X: the training data. [samples, dimensions]
     @param y: the target data. [targets]
     @param folds: how many folds to use in the cross validation
     @param shuffle: whether or not to shuffle the samples for xval
+    @pred_method: can be predict, predict_proba, predict_log_proba
     @param clf_args: arguments for initialising the classifier
     @param clf_fit_args: arguments for training the classifier
     @param clf_pred_args: arguments for predicting with the classifier
@@ -60,7 +66,9 @@ def CV(clf, X, y, folds=5, shuffle=True, clf_args={}, clf_fit_args={},
     """
     cv = KFold(len(X), k=folds, indices=True, shuffle=shuffle)
     dview.push({'X': X, 'y': y, 'clf': clf, 'clf_args': clf_args,
-                     'clf_fit_args': clf_fit_args, 'clf_pred_args': clf_pred_args,
+                     'pred_method': pred_method,
+                     'clf_fit_args': clf_fit_args,
+                     'clf_pred_args': clf_pred_args,
                      'return_coefs': return_coefs})
     pred = []
     try:
