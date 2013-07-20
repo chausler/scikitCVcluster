@@ -48,12 +48,13 @@ def classify(cv):
     return (pred, coef)
 
 
-def CV(clf, X, y, folds=5, shuffle=True, pred_method='predict', clf_args={},
+def CV(clf, X, y, cv=None, folds=5, shuffle=True, pred_method='predict', clf_args={},
        clf_fit_args={}, clf_pred_args={}, return_coefs=False):
     """
     @param clf: the classifier to use, must have methods fit and predict
     @param X: the training data. [samples, dimensions]
     @param y: the target data. [targets]
+    @param cv: pass your own cv indexes if you like
     @param folds: how many folds to use in the cross validation
     @param shuffle: whether or not to shuffle the samples for xval
     @pred_method: can be predict, predict_proba, predict_log_proba
@@ -64,7 +65,9 @@ def CV(clf, X, y, folds=5, shuffle=True, pred_method='predict', clf_args={},
         the classifier must have the attribute coef_ for this
     @return: numpy arrays of the predictions and coefficients
     """
-    cv = KFold(len(X), k=folds, indices=True, shuffle=shuffle)
+    if cv is None:
+        cv = KFold(len(X), k=folds, indices=True, shuffle=shuffle)
+
     dview.push({'X': X, 'y': y, 'clf': clf, 'clf_args': clf_args,
                      'pred_method': pred_method,
                      'clf_fit_args': clf_fit_args,
