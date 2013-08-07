@@ -66,7 +66,7 @@ def CV(clf, X, y, cv=None, folds=5, shuffle=True, pred_method='predict', clf_arg
     @return: numpy arrays of the predictions and coefficients
     """
     if cv is None:
-        cv = KFold(len(X), k=folds, indices=True, shuffle=shuffle)
+        cv = KFold(len(X), n_folds=folds, indices=True, shuffle=shuffle)
 
     dview.push({'X': X, 'y': y, 'clf': clf, 'clf_args': clf_args,
                      'pred_method': pred_method,
