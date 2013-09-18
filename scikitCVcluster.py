@@ -84,10 +84,11 @@ def CV(clf, X, y, cv=None, folds=5, shuffle=True, pred_method='predict', clf_arg
         if e.ename:
             print "e-name:" + str(e.ename)
 
-    preds = []
+#    preds = []
     coefs = []
-    for (p, c) in pred:
-        preds += p.tolist()
+    preds = np.zeros_like(y)
+    for (p, c), (train, test) in zip(pred, cv):
+        preds[test] = p
         coefs += [c]
 
     return np.array(preds), np.array(coefs)
