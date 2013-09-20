@@ -90,5 +90,6 @@ def CV(clf, X, y, cv=None, folds=5, shuffle=True, pred_method='predict', clf_arg
     for (p, c), (train, test) in zip(pred, cv):
         preds[test] = p
         coefs += [c]
-
+    rc.purge_results('all')
+    rc.results.clear()
     return np.array(preds), np.array(coefs)
